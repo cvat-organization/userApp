@@ -11,11 +11,36 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import Fa6 from 'react-native-vector-icons/FontAwesome6';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 
 const UserProfile = () => {
+  const baseUrl = 'http://192.168.81.87:4000';
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWU4ZGU3NWZiZWYyYTIwZGQyZDYzNmUiLCJpYXQiOjE3MDk4Nzk5NDl9.oYyHrsEys6bGgUnT6hlyhDT7cadg7J0EcU6yKgVF5Rg';
+  const logout = () => {
+    console.log('function cslled');
+    axios
+      .post(
+        baseUrl + '/logout',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+      .then(function (res) {
+        console.log(res.response);
+      })
+      .catch(function (e) {
+        console.log(e.message);
+      });
+  };
+
   const navigation = useNavigation();
   const [windowDimensions, setWindowDimensions] = useState({
     width: Dimensions.get('window').width,
@@ -32,7 +57,7 @@ const UserProfile = () => {
   }, []);
 
   const {width, height} = windowDimensions;
-
+  const name = 'sarvesh';
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
       <View style={{...styles.profileBar, justifyContent: 'space-between'}}>
@@ -50,7 +75,7 @@ const UserProfile = () => {
               textAlignVertical: 'center',
               color: 'grey',
               fontWeight: 'bold',
-              fontSize: height / 30,
+              fontSize: Math.max(height, width) / 40,
             }}>
             Profile
           </Text>
@@ -74,7 +99,7 @@ const UserProfile = () => {
             Sarvesh{''}
             <Text style={{fontSize: width / 35, color: 'grey'}}>
               {'\n\n\n'}
-              {'{ Sarvesh R }'}
+              {`{ ${name} }`}
             </Text>
             <Text style={{fontSize: width / 35, color: '#D19641'}}>
               {'\n'}ID: u1234567891
@@ -97,26 +122,29 @@ const UserProfile = () => {
         <View
           style={{
             ...styles.profileInfoAttribute,
+            width: 0.9 * width,
             marginTop: height / 30,
             minHeight: height / 8,
-            padding: 5,
           }}>
-          <Icon
-            name="globe"
+          <Feather
+            name="book-open"
             size={width / 20}
             color="grey"
             style={styles.bioIcons}
           />
-          <Text style={{fontSize: width / 30, color: 'grey'}}>
+          <Text
+            style={{
+              fontSize: width / 30,
+              color: 'grey',
+              marginRight: width / 10,
+            }}>
             Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm
-            Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm
-            Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.Hi I'm Sarvesh.
           </Text>
         </View>
 
         <View style={styles.profileInfo}>
           <View style={styles.profileInfoAttribute}>
-            <Icon
+            <Feather
               name="globe"
               size={width / 20}
               color="grey"
@@ -192,8 +220,8 @@ const UserProfile = () => {
           </View>
 
           <View style={styles.profileInfoAttribute}>
-            <Icon
-              name="globe"
+            <IonIcon
+              name="footsteps-sharp"
               size={width / 20}
               color="grey"
               style={styles.bioIcons}
@@ -236,18 +264,30 @@ const UserProfile = () => {
           }}>
           <View>
             <TouchableOpacity style={styles.followOptions}>
-              <Text style={{color: 'black'}}>Following</Text>
+              <Text style={{color: 'black', fontSize: width / 25}}>
+                Following
+              </Text>
               <Text
-                style={{color: '#D19641', fontWeight: 'bold', fontSize: 25}}>
+                style={{
+                  color: '#D19641',
+                  fontWeight: 'bold',
+                  fontSize: width / 15,
+                }}>
                 10{' '}
               </Text>
             </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row'}}>
             <TouchableOpacity style={styles.followOptions}>
-              <Text style={{color: 'black'}}>Followers</Text>
+              <Text style={{color: 'black', fontSize: width / 25}}>
+                Followers
+              </Text>
               <Text
-                style={{color: '#D19641', fontWeight: 'bold', fontSize: 25}}>
+                style={{
+                  color: '#D19641',
+                  fontWeight: 'bold',
+                  fontSize: width / 15,
+                }}>
                 20{' '}
               </Text>
             </TouchableOpacity>
@@ -265,12 +305,20 @@ const UserProfile = () => {
           }}>
           <View style={{flexDirection: 'row', flex: 1}}>
             <TouchableOpacity style={styles.findFriends}>
-              <Icon
+              <Feather
                 name="user-plus"
-                size={15}
-                color="black"
-                style={{marginLeft: width / 50}}></Icon>
-              <Text style={{color: '#D19641', marginRight: width / 50}}>
+                size={width / 30}
+                color="#D19641"
+                style={{
+                  marginLeft: width / 50,
+                  marginRight: width / 70,
+                }}></Feather>
+              <Text
+                style={{
+                  color: '#D19641',
+                  marginRight: width / 30,
+                  fontSize: width / 40,
+                }}>
                 Find Friends
               </Text>
             </TouchableOpacity>
@@ -283,6 +331,7 @@ const UserProfile = () => {
                   color: 'white',
                   marginRight: width / 30,
                   marginLeft: width / 30,
+                  fontSize: width / 40,
                 }}>
                 Refer
               </Text>
@@ -301,7 +350,7 @@ const UserProfile = () => {
           <Text style={{color: 'grey', fontSize: 12}}>Change Password </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton}>
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
           <Text style={{color: 'grey', fontSize: 12}}>Logout </Text>
         </TouchableOpacity>
       </View>
@@ -319,8 +368,9 @@ const styles = StyleSheet.create({
   profileBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    height: Dimensions.get('window').height / 15,
+    borderBottomWidth: 0.8,
+    borderBottomColor: 'grey',
+    height: Dimensions.get('window').height / 20,
     backgroundColor: '#FAECD4',
   },
 
@@ -352,7 +402,7 @@ const styles = StyleSheet.create({
     marginTop: '2%',
     flexDirection: 'row',
     //justifyContent: 'space-between',
-    width: '100%',
+    width: '90%',
     // borderWidth: 1,
     alignItems: 'center',
   },
@@ -370,6 +420,7 @@ const styles = StyleSheet.create({
   bioIcons: {
     marginRight: Dimensions.get('window').width / 50,
     minWidth: Dimensions.get('window').width / 15,
+    // borderWidth: 1,
   },
 
   bioFields: {
@@ -380,7 +431,7 @@ const styles = StyleSheet.create({
   horizontalLine: {
     width: '100%',
     borderWidth: 1,
-    marginTop: Dimensions.get('window').width / 30,
+    marginTop: Dimensions.get('window').height / 60,
     backgroundColor: 'grey',
   },
 
@@ -388,7 +439,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0.02 * Dimensions.get('window').height,
+    padding: 0.01 * Dimensions.get('window').height,
     width: 0.35 * Dimensions.get('window').width,
     borderRadius: 25,
     borderWidth: 1,
@@ -437,7 +488,7 @@ const styles = StyleSheet.create({
   referButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0.02 * Dimensions.get('window').height,
+    padding: 0.01 * Dimensions.get('window').height,
     width: 0.35 * Dimensions.get('window').width,
     borderRadius: 25,
     backgroundColor: '#D19641',
@@ -445,7 +496,7 @@ const styles = StyleSheet.create({
     borderColor: '#D19641',
   },
   bottomButtons: {
-    padding: 10,
+    padding: Dimensions.get('window').width / 40,
     justifyContent: 'center',
     flexDirection: 'row',
   },
@@ -454,7 +505,7 @@ const styles = StyleSheet.create({
     //flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0.02 * Dimensions.get('window').height,
+    //padding: 0.02 * Dimensions.get('window').height,
     width: 0.35 * Dimensions.get('window').width,
     backgroundColor: 'white',
   },
