@@ -8,10 +8,13 @@ import {
   StatusBar,
   ScrollView,
   TouchableOpacity,
+  ToastAndroid,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
+import axios from 'axios';
+import {allValid} from '../utilities';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
@@ -19,39 +22,47 @@ const h = Dimensions.get('window').height;
 export default function SignUpScreen() {
   const navigation = useNavigation();
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [phoneNo, setPhoneNo] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const userType = 'Customer';
 
-  const handleCancel = () => {
-    setFirstName('');
-    setLastName('');
-    setPhone('');
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    navigation.navigate('Login');
-  };
+  const handleCancel = () => navigation.navigate('Login');
 
-  const handleSubmit = () => {
-    const userData = {
-      firstName: firstName,
-      lastName: lastName,
-      phone: phone,
+  const handleSubmit = async () => {
+    const data = {
+      fullName: fullName,
+      displayName: displayName,
+      phoneNo: phoneNo,
       email: email,
       password: password,
       confirmPassword: confirmPassword,
+      userType: userType,
     };
 
-    console.log(userData);
+    console.log(data);
 
-    navigation.navigate('HomePage');
+    if (allValid(data)) {
+      try {
+        const response = await axios.post(
+          'http://192.168.0.108:4000/register', // change to server
+          data,
+        );
+        if (response.status === 201) {
+          navigation.navigate('EmailPhone');
+        }
+        console.log(response.data.message);
+        ToastAndroid.show(response.data.message, ToastAndroid.LONG);
+      } catch (error) {
+        console.log(error.response.data.message);
+        ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
+      }
+    }
   };
 
   return (
@@ -76,7 +87,7 @@ export default function SignUpScreen() {
               fontWeight: 'bold',
               color: COLORS.black,
             }}>
-            SIGN UP
+            Sign Up
           </Text>
           <Text
             style={{
@@ -89,40 +100,40 @@ export default function SignUpScreen() {
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>FIRST NAME</Text>
+          <Text style={styles.inputHeading}>Full name</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Enter your first name"
+            placeholder="Enter your full name"
             placeholderTextColor={COLORS.light_gray}
-            value={firstName}
-            onChangeText={text => setFirstName(text)}
+            value={fullName}
+            onChangeText={text => setFullName(text)}
           />
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>LAST NAME</Text>
+          <Text style={styles.inputHeading}>Display name</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Enter your last name"
+            placeholder="Enter your display name"
             placeholderTextColor={COLORS.light_gray}
-            value={lastName}
-            onChangeText={text => setLastName(text)}
+            value={displayName}
+            onChangeText={text => setDisplayName(text)}
           />
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>PHONE</Text>
+          <Text style={styles.inputHeading}>Mobile no.</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Enter your phone number"
+            placeholder="Enter your mobile number"
             placeholderTextColor={COLORS.light_gray}
-            value={phone}
-            onChangeText={text => setPhone(text)}
+            value={phoneNo}
+            onChangeText={text => setPhoneNo(text)}
           />
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>EMAIL</Text>
+          <Text style={styles.inputHeading}>Email</Text>
           <TextInput
             style={styles.inputField}
             placeholder="Enter your email"
@@ -134,7 +145,7 @@ export default function SignUpScreen() {
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>PASSWORD</Text>
+          <Text style={styles.inputHeading}>Password</Text>
           <View style={styles.passwordField}>
             <TextInput
               style={{flex: 1, color: COLORS.black}}
@@ -156,7 +167,7 @@ export default function SignUpScreen() {
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>CONFIRM PASSWORD</Text>
+          <Text style={styles.inputHeading}>Confirm Password</Text>
           <View style={styles.passwordField}>
             <TextInput
               style={{flex: 1, color: COLORS.black}}
@@ -180,10 +191,15 @@ export default function SignUpScreen() {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonCancel} onPress={handleCancel}>
-            <Text style={{color: COLORS.dark_peach}}>Cancel</Text>
+            <Text
+              style={{color: COLORS.dark_peach, fontSize: FONT_SIZES.medium}}>
+              Cancel
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmit}>
-            <Text style={{color: COLORS.white}}>Submit</Text>
+            <Text style={{color: COLORS.white, fontSize: FONT_SIZES.medium}}>
+              Submit
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -202,7 +218,7 @@ const styles = StyleSheet.create({
   buttonCancel: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0.02 * h,
+    padding: 0.01 * h,
     width: 0.35 * w,
     borderRadius: 25,
     borderWidth: 1,
@@ -211,7 +227,7 @@ const styles = StyleSheet.create({
   buttonSubmit: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 0.02 * h,
+    padding: 0.01 * h,
     width: 0.35 * w,
     borderRadius: 25,
     backgroundColor: COLORS.dark_peach,
