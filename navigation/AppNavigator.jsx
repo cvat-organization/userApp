@@ -8,6 +8,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import EmailPhone from '../screens/EmailPhone';
 import ForgotPassword from '../screens/ForgotPassword';
 import NewPassword from '../screens/NewPassword';
+import UserProfile from '../screens/UserProfile';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export default function AppNavigator() {
         <Stack.Screen name="EmailPhone" component={EmailPhone} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="NewPassword" component={NewPassword} />
+        <Stack.Screen name="UserProfile" component={UserProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
