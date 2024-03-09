@@ -34,27 +34,22 @@ export default function EmailPhone() {
     const userData = {
       [emailPhone.includes('@') ? 'email' : 'phoneNo']: emailPhone,
       password: password,
-      userType: 'Customer'
+      userType: 'Customer',
     };
-    console.log(userData)
+    console.log(userData);
 
-    axios.post(
-      'http://192.168.0.155:4000/login', 
-      userData, 
-      )
-      .then(function(res){
+    axios
+      .post('http://192.168.0.155:4000/login', userData)
+      .then(function (res) {
         //saveTokenToStorage(res.data.token);
-        if(res.status === 200){
+        if (res.status === 200) {
           navigation.navigate('HomePage');
         }
         // console.log(userData);
-      
       })
-      .catch(function(e){
-        console.log(e.message)
-      })
-
-    
+      .catch(function (e) {
+        console.log(e.message);
+      });
   };
 
   //   // check if phone or email is valid

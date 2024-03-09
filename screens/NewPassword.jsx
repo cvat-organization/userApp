@@ -38,26 +38,25 @@ export default function NewPassword() {
       password: password,
     };
     if (validPassword(password) && passwordsMatch(password, confirmPassword)) {
-      console.log("called")
-      axios.post('http://192.168.0.155:4000/new-password', userData, {
-        headers: {
-          Authorization: `Bearer ${pwdToken}`,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-        if(res.status === 201){
-          
-          navigation.navigate("Login");
-        }
-      })
-      .catch((e) => {
-        console.log(e.message)
-      })
+      console.log('called');
+      axios
+        .post('http://192.168.0.155:4000/new-password', userData, {
+          headers: {
+            Authorization: `Bearer ${pwdToken}`,
+          },
+        })
+        .then(res => {
+          console.log(res);
+          if (res.status === 201) {
+            navigation.navigate('Login');
+          }
+        })
+        .catch(e => {
+          console.log(e.message);
+        });
     }
 
     console.log(userData);
-    
   };
 
   // encrypt passwords

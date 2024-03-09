@@ -58,10 +58,9 @@ export default function SignUpScreen() {
             email: data.email,
             password: data.password,
             userType: data.userType,
-
           },
         );
-        console.log(response)
+        console.log(response);
         if (response.status === 201) {
           navigation.navigate('EmailPhone');
         }
@@ -71,7 +70,6 @@ export default function SignUpScreen() {
         console.log(error.message);
         ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
       }
-
     }
   };
 

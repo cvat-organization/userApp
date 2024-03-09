@@ -37,17 +37,16 @@ export default function ForgotPassword() {
     axios
       .post('http://192.168.0.155:4000/request-otp', userData)
       .then(res => {
-        if(res.status === 200){
+        if (res.status === 200) {
           // console.log(res.body)
           navigation.navigate('ForgotPwdOTP', {email: email});
         }
-      }).catch((e) => {
-        console.log(e.message)
+      })
+      .catch(e => {
+        console.log(e.message);
       });
 
     console.log(userData);
-
-    
   };
 
   //   // check if email is valid
