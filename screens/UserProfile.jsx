@@ -7,41 +7,22 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
+  ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Fa6 from 'react-native-vector-icons/FontAwesome6';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
+import {clearAll, getData} from '../utilities';
+import auth from '@react-native-firebase/auth';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const UserProfile = () => {
-  const baseUrl = 'http://192.168.81.87:4000';
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWU4ZGU3NWZiZWYyYTIwZGQyZDYzNmUiLCJpYXQiOjE3MDk4Nzk5NDl9.oYyHrsEys6bGgUnT6hlyhDT7cadg7J0EcU6yKgVF5Rg';
-  const logout = () => {
-    console.log('function cslled');
-    axios
-      .post(
-        baseUrl + '/logout',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      .then(function (res) {
-        console.log(res.response);
-      })
-      .catch(function (e) {
-        console.log(e.message);
-      });
-  };
-
   const navigation = useNavigation();
+
   const [windowDimensions, setWindowDimensions] = useState({
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
@@ -50,14 +31,58 @@ const UserProfile = () => {
   useEffect(() => {
     const onChange = ({window: {width: newWidth, height: newHeight}}) => {
       setWindowDimensions({width: newWidth, height: newHeight});
-      console.log('rotated');
     };
 
     Dimensions.addEventListener('change', onChange);
   }, []);
 
   const {width, height} = windowDimensions;
-  const name = 'sarvesh';
+  const name = 'Sarvesh';
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '266362311161-nsmmsnh70bpsfqn82e7b2utrb55h05v3.apps.googleusercontent.com',
+    });
+  }, []);
+
+  const onLogout = async () => {
+    try {
+      const signedIn = await GoogleSignin.isSignedIn();
+      if (signedIn) {
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        await auth().signOut();
+        console.log('Google successfully logged out!');
+        ToastAndroid.show('Logged out successfully!', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+
+    try {
+      const token = await getData('token');
+      if (token) {
+        const response = await axios.post(
+          'http://192.168.0.108:4000/logout',
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+        console.log(response.data.message);
+        ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.log(error.response.data.message);
+    }
+
+    clearAll();
+    navigation.navigate('Login');
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
       <View style={{...styles.profileBar, justifyContent: 'space-between'}}>
@@ -350,7 +375,7 @@ const UserProfile = () => {
           <Text style={{color: 'grey', fontSize: 12}}>Change Password </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
           <Text style={{color: 'grey', fontSize: 12}}>Logout </Text>
         </TouchableOpacity>
       </View>

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import axios from 'axios';
+import {getData, listAllKeys} from '../utilities';
 
 import LoginScreen from '../screens/LoginScreen';
 import HomePage from '../screens/HomePage';
@@ -9,14 +11,57 @@ import EmailPhone from '../screens/EmailPhone';
 import ForgotPassword from '../screens/ForgotPassword';
 import NewPassword from '../screens/NewPassword';
 import UserProfile from '../screens/UserProfile';
+import SplashScreen from '../screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
+  const [initialRouteName, setInitialRouteName] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  listAllKeys();
+
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const token = await getData('token');
+        if (token) {
+          try {
+            const response = await axios.get(
+              'http://192.168.0.108:4000/homepage',
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+            );
+            setInitialRouteName('HomePage');
+            console.log(response.data.message);
+          } catch (error) {
+            setInitialRouteName('Login');
+            console.error(error);
+          }
+        } else {
+          setInitialRouteName('Login');
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000); // 5 seconds
+      }
+    };
+
+    checkToken();
+  }, []);
+
+  if (loading) return <SplashScreen />;
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName={initialRouteName}
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="HomePage" component={HomePage} />
@@ -25,6 +70,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="NewPassword" component={NewPassword} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
+        <Stack.Screen name="SplashScreen" component={SplashScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

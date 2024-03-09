@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Dimensions,
@@ -8,12 +8,16 @@ import {
   TouchableOpacity,
   StatusBar,
   Image,
+  ToastAndroid,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {COLORS, FONT_SIZES} from '../constants';
 
 import auth from '@react-native-firebase/auth';
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
@@ -35,15 +39,15 @@ export default function LoginScreen() {
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
 
-      console.log('User signed in successfully');
-      console.log(user);
-
+      console.log('Signed in with Google');
+      ToastAndroid.show('Signed in with Google', ToastAndroid.SHORT);
       navigation.navigate('HomePage', {user});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('User canceled sign-in');
+        console.log('Sign-In cancelled');
+        ToastAndroid.show('Sign-In cancelled', ToastAndroid.SHORT);
       } else {
-        console.error('Error signing in with Google:', error.message);
+        console.error(error.message);
       }
     }
   };
@@ -62,7 +66,7 @@ export default function LoginScreen() {
           onPress={() => {
             navigation.navigate('EmailPhone');
           }}>
-          <Text style={styles.signInText}>LOGIN WITH EMAIL / PHONE</Text>
+          <Text style={styles.signInText}>Login with Email / Mobile No.</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -72,7 +76,7 @@ export default function LoginScreen() {
             source={require('../assets/images/google.png')}
             style={styles.googleLogo}
           />
-          <Text style={styles.signInText}>CONTINUE WITH GOOGLE</Text>
+          <Text style={styles.signInText}>Continue with Google</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -82,13 +86,13 @@ export default function LoginScreen() {
             source={require('../assets/images/facebook.png')}
             style={styles.googleLogo}
           />
-          <Text style={styles.signInText}>CONTINUE WITH FACEBOOK</Text>
+          <Text style={styles.signInText}>Continue with Facebook</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.signUpButton}
           onPress={() => navigation.navigate('SignUp')}>
-          <Text style={styles.signUpText}>SIGN UP</Text>
+          <Text style={styles.signUpText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

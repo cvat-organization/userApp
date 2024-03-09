@@ -1,4 +1,7 @@
 import {ToastAndroid} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Fix toast getting cut off: validPassword
 
 export const allValid = data => {
   return (
@@ -81,5 +84,69 @@ export const passwordsMatch = (password, confirmPassword) => {
   } else {
     ToastAndroid.show('Passwords do not match', ToastAndroid.SHORT);
     return false;
+  }
+};
+
+export const isEmail = emailPhone => emailPhone.includes('@');
+
+export const storeData = async (key, value) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const storeObjectData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem(key, jsonValue);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getData = async key => {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (value !== null) {
+      return value;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getObjectData = async key => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(key);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const removeData = async key => {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const clearAll = async () => {
+  try {
+    await AsyncStorage.clear();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const listAllKeys = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    console.log(keys);
+  } catch (error) {
+    console.log(error);
   }
 };
