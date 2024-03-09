@@ -41,6 +41,7 @@ export default function HomePage({route}) {
       <Text style={styles.text}>Hello {user ? user.name : 'test_user'}!</Text>
       <Text style={styles.text}>Welcome to HomePage!</Text>
       <Button title="Logout" onPress={onLogoutButtonPress} />
+      <Button title = "ViewProfile" onPress={() => navigation.navigate("UserProfile")} />
     </View>
   );
 }

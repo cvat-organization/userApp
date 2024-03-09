@@ -10,21 +10,13 @@ import {
   Image,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {COLORS, FONT_SIZES} from '../constants';
 
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
-// update fonts
-import {
-  useFonts,
-  Montserrat_400Regular,
-  Montserrat_700Bold,
-} from '@expo-google-fonts/montserrat';
-
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
-const regular = 'Montserrat_400Regular';
-const bold = 'Montserrat_700Bold';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -36,7 +28,6 @@ export default function LoginScreen() {
     });
   }, []);
 
-  const [loggedIn, setLoggedIn] = useState(false);
   const onGoogleButtonPress = async () => {
     try {
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
@@ -64,31 +55,40 @@ export default function LoginScreen() {
       <StatusBar />
 
       <View style={styles.container}>
-        <View style={styles.logo}>
-          <View style={styles.logoContainer} />
-        </View>
+        <View style={styles.logo} />
 
         <TouchableOpacity
-          style={styles.loginButton}
+          style={styles.signInButton}
           onPress={() => {
-            console.log('Continue with phone number');
-            navigation.navigate('HomePage');
+            navigation.navigate('EmailPhone');
           }}>
-          <Text style={{fontFamily: bold, color: 'white'}}>
-            CONTINUE WITH PHONE
-          </Text>
+          <Text style={styles.signInText}>LOGIN WITH EMAIL / PHONE</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.googleSignIn}
+          style={styles.signInButton}
           onPress={onGoogleButtonPress}>
           <Image
             source={require('../assets/images/google.png')}
             style={styles.googleLogo}
           />
-          <Text style={{fontFamily: bold, color: 'white'}}>
-            SIGN IN WITH GOOGLE
-          </Text>
+          <Text style={styles.signInText}>CONTINUE WITH GOOGLE</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.signInButton}
+          onPress={() => console.log('CONTINUE WITH FACEBOOK')}>
+          <Image
+            source={require('../assets/images/facebook.png')}
+            style={styles.googleLogo}
+          />
+          <Text style={styles.signInText}>CONTINUE WITH FACEBOOK</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.signUpText}>SIGN UP</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -99,22 +99,33 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     resizeMode: 'cover',
-    justifyContent: 'center',
     width: '100%',
     height: '100%',
   },
-  container: {flex: 1, alignItems: 'center', justifyContent: 'center'},
+  container: {
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0.05 * h,
+    width: w,
+  },
   googleLogo: {
     width: 20,
     height: 20,
     marginRight: 10,
     marginLeft: 10,
   },
-  googleSignIn: {
+  logo: {
+    width: 100,
+    height: 100,
+    backgroundColor: COLORS.dark_peach,
+    borderRadius: 25,
+    marginBottom: 100,
+  },
+  signInButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#d1954170',
+    backgroundColor: COLORS.white,
     width: 0.8 * w,
     borderRadius: 25,
     padding: 15,
@@ -122,20 +133,28 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     alignItems: 'center',
   },
-  loginButton: {
-    backgroundColor: '#d1954170',
+  signInText: {
+    fontWeight: 'bold',
+    color: COLORS.black,
+    fontSize: FONT_SIZES.regular,
+  },
+  signUpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLORS.transparent,
     width: 0.8 * w,
     borderRadius: 25,
     padding: 15,
     marginTop: 15,
     marginBottom: 15,
     alignItems: 'center',
+    borderColor: COLORS.white,
+    borderWidth: 1,
   },
-  logoContainer: {
-    width: 100,
-    height: 100,
-    backgroundColor: '#D19641',
-    borderRadius: 25,
-    marginBottom: 100,
+  signUpText: {
+    fontWeight: 'bold',
+    color: COLORS.white,
+    fontSize: FONT_SIZES.regular,
   },
 });
