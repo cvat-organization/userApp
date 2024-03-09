@@ -12,6 +12,8 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
+import VerifyForgotPasswordOTP from './VerifyForgotPasswordOTP';
+import axios from 'axios';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
@@ -29,11 +31,23 @@ export default function ForgotPassword() {
   const handleSubmit = () => {
     const userData = {
       email: email,
+      userType: 'Customer',
     };
+
+    axios
+      .post('http://192.168.0.155:4000/request-otp', userData)
+      .then(res => {
+        if(res.status === 200){
+          // console.log(res.body)
+          navigation.navigate('ForgotPwdOTP', {email: email});
+        }
+      }).catch((e) => {
+        console.log(e.message)
+      });
 
     console.log(userData);
 
-    navigation.navigate('NewPassword');
+    
   };
 
   //   // check if email is valid

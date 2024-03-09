@@ -12,7 +12,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
-
+import axios from 'axios';
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
@@ -32,12 +32,29 @@ export default function EmailPhone() {
 
   const handleSubmit = () => {
     const userData = {
-      emailPhone: emailPhone,
+      [emailPhone.includes('@') ? 'email' : 'phoneNo']: emailPhone,
       password: password,
+      userType: 'Customer'
     };
+    console.log(userData)
 
-    console.log(userData);
-    navigation.navigate('HomePage');
+    axios.post(
+      'http://192.168.0.155:4000/login', 
+      userData, 
+      )
+      .then(function(res){
+        //saveTokenToStorage(res.data.token);
+        if(res.status === 200){
+          navigation.navigate('HomePage');
+        }
+        // console.log(userData);
+      
+      })
+      .catch(function(e){
+        console.log(e.message)
+      })
+
+    
   };
 
   //   // check if phone or email is valid

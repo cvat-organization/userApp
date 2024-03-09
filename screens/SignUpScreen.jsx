@@ -50,18 +50,28 @@ export default function SignUpScreen() {
     if (allValid(data)) {
       try {
         const response = await axios.post(
-          'http://192.168.0.108:4000/register', // change to server
-          data,
+          'http://192.168.0.155:4000/register', // change to server
+          {
+            fullName: data.fullName,
+            displayName: data.displayName,
+            phoneNo: data.phoneNo,
+            email: data.email,
+            password: data.password,
+            userType: data.userType,
+
+          },
         );
+        console.log(response)
         if (response.status === 201) {
           navigation.navigate('EmailPhone');
         }
         console.log(response.data.message);
         ToastAndroid.show(response.data.message, ToastAndroid.LONG);
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log(error.message);
         ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
       }
+
     }
   };
 

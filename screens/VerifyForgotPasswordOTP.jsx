@@ -12,55 +12,50 @@ import {
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
-import {passwordsMatch, validPassword} from '../utilities';
 import axios from 'axios';
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
-export default function NewPassword() {
+export default function VerifyForgotPasswordOTP() {
+
+
   const navigation = useNavigation();
 
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [otp, setOtp] = useState('');
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const route = useRoute();
   const handleCancel = () => {
-    setPassword('');
-    setConfirmPassword('');
+    setOtp('');
     navigation.navigate('Login');
   };
-  const pwdToken = route.params?.pwdToken;
+
+  const route = useRoute();
+  const email = route.params?.email;
+
   const handleSubmit = () => {
     const userData = {
-      password: password,
+      otp: otp,
+      email: email,
+      userType: 'Customer',
+      
     };
-    if (validPassword(password) && passwordsMatch(password, confirmPassword)) {
-      console.log("called")
-      axios.post('http://192.168.0.155:4000/new-password', userData, {
-        headers: {
-          Authorization: `Bearer ${pwdToken}`,
-        },
-      })
-      .then((res) => {
-        console.log(res)
-        if(res.status === 201){
-          
-          navigation.navigate("Login");
+
+    axios.post('http://192.168.0.155:4000/verify-otp', userData).then((res) => {
+        console.log(res.data.token);
+        if(res.status === 200){
+            navigation.navigate('NewPassword', {pwdToken : res.data.token});
         }
-      })
-      .catch((e) => {
-        console.log(e.message)
-      })
-    }
+        
+    })
+    .catch((e) => {
+        console.log(e.message);
+    })
 
     console.log(userData);
+
     
   };
 
-  // encrypt passwords
+  
 
   return (
     <ScrollView style={{flex: 1, backgroundColor: COLORS.light_peach}}>
@@ -84,7 +79,7 @@ export default function NewPassword() {
               fontWeight: 'bold',
               color: COLORS.black,
             }}>
-            NEW PASSWORD
+            VERIFY OTP
           </Text>
           <Text
             style={{
@@ -92,53 +87,20 @@ export default function NewPassword() {
               fontWeight: 'normal',
               color: COLORS.black,
             }}>
-            Set new password for your account.
+            Enter the verification OTP sent to the requested Email
           </Text>
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>ENTER NEW PASSWORD</Text>
-          <View style={styles.passwordField}>
-            <TextInput
-              style={{flex: 1, color: COLORS.black}}
-              placeholder="Enter new password"
-              placeholderTextColor={COLORS.light_gray}
-              secureTextEntry={!showPassword}
-              value={password}
-              autoCapitalize="none"
-              onChangeText={text => setPassword(text)}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Icon
-                name={!showPassword ? 'eye' : 'eye-slash'}
-                size={20}
-                color={COLORS.black}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.input}>
-          <Text style={styles.inputHeading}>CONFIRM PASSWORD</Text>
-          <View style={styles.passwordField}>
-            <TextInput
-              style={{flex: 1, color: COLORS.black}}
-              placeholder="Confirm your password"
-              placeholderTextColor={COLORS.light_gray}
-              secureTextEntry={!showConfirmPassword}
-              value={confirmPassword}
-              autoCapitalize="none"
-              onChangeText={text => setConfirmPassword(text)}
-            />
-            <TouchableOpacity
-              onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-              <Icon
-                name={!showConfirmPassword ? 'eye' : 'eye-slash'}
-                size={20}
-                color={COLORS.black}
-              />
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.inputHeading}>ENTER OTP</Text>
+          <TextInput
+            style={styles.inputField}
+            placeholder="Enter OTP"
+            placeholderTextColor={COLORS.light_gray}
+            value={otp}
+            autoCapitalize="none"
+            onChangeText={text => setOtp(text)}
+          />
         </View>
 
         <View style={styles.buttonContainer}>

@@ -9,6 +9,8 @@ import EmailPhone from '../screens/EmailPhone';
 import ForgotPassword from '../screens/ForgotPassword';
 import NewPassword from '../screens/NewPassword';
 import UserProfile from '../screens/UserProfile';
+import VerifyForgotPasswordOTP from '../screens/VerifyForgotPasswordOTP';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,7 @@ export default function AppNavigator() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="NewPassword" component={NewPassword} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
+        <Stack.Screen name="ForgotPwdOTP" component={VerifyForgotPasswordOTP} />
       </Stack.Navigator>
     </NavigationContainer>
   );
