@@ -12,7 +12,6 @@ import UserProfile from '../screens/UserProfile';
 import VerifyForgotPasswordOTP from '../screens/VerifyForgotPasswordOTP';
 import ChangePassword from '../screens/ChangePassword';
 
-
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
