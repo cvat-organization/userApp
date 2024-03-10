@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
 import axios from 'axios';
 import {allValid} from '../utilities';
-
+import {baseUrl} from '../constants';
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
@@ -50,7 +50,7 @@ export default function SignUpScreen() {
     if (allValid(data)) {
       try {
         const response = await axios.post(
-          'http://192.168.0.155:4000/register', // change to server
+          baseUrl + '/register', // change to server
           {
             fullName: data.fullName,
             displayName: data.displayName,
@@ -58,10 +58,9 @@ export default function SignUpScreen() {
             email: data.email,
             password: data.password,
             userType: data.userType,
-
           },
         );
-        console.log(response)
+        console.log(response);
         if (response.status === 201) {
           navigation.navigate('EmailPhone');
         }
@@ -71,7 +70,6 @@ export default function SignUpScreen() {
         console.log(error.message);
         ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
       }
-
     }
   };
 

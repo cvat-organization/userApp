@@ -10,6 +10,7 @@ import ForgotPassword from '../screens/ForgotPassword';
 import NewPassword from '../screens/NewPassword';
 import UserProfile from '../screens/UserProfile';
 import VerifyForgotPasswordOTP from '../screens/VerifyForgotPasswordOTP';
+import ChangePassword from '../screens/ChangePassword';
 
 
 const Stack = createNativeStackNavigator();
@@ -18,7 +19,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="UserProfile"
         screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="HomePage" component={HomePage} />
@@ -28,6 +29,7 @@ export default function AppNavigator() {
         <Stack.Screen name="NewPassword" component={NewPassword} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="ForgotPwdOTP" component={VerifyForgotPasswordOTP} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );

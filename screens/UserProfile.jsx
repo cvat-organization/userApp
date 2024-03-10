@@ -16,9 +16,8 @@ import Fa6 from 'react-native-vector-icons/FontAwesome6';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-
+import {baseUrl} from '../constants';
 const UserProfile = () => {
-  const baseUrl = 'http://192.168.81.87:4000';
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWU4ZGU3NWZiZWYyYTIwZGQyZDYzNmUiLCJpYXQiOjE3MDk4Nzk5NDl9.oYyHrsEys6bGgUnT6hlyhDT7cadg7J0EcU6yKgVF5Rg';
   const logout = () => {
@@ -39,6 +38,10 @@ const UserProfile = () => {
       .catch(function (e) {
         console.log(e.message);
       });
+  };
+
+  const changePwd = () => {
+    navigation.navigate('ChangePassword');
   };
 
   const navigation = useNavigation();
@@ -346,7 +349,7 @@ const UserProfile = () => {
           <Text style={{fontWeight: 'bold', color: '#D16941'}}>FREE</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.changePwdButton}>
+        <TouchableOpacity style={styles.changePwdButton} onPress={changePwd}>
           <Text style={{color: 'grey', fontSize: 12}}>Change Password </Text>
         </TouchableOpacity>
 

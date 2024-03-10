@@ -14,7 +14,7 @@ import {COLORS, FONT_SIZES} from '../constants';
 
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
-
+import {baseUrl} from '../constants';
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 

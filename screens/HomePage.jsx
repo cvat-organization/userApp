@@ -4,7 +4,7 @@ import {View, Text, StyleSheet, Button, Image} from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useNavigation} from '@react-navigation/native';
-
+import {baseUrl} from '../constants';
 export default function HomePage({route}) {
   const {user} = route.params || {};
   const navigation = useNavigation();
@@ -41,7 +41,10 @@ export default function HomePage({route}) {
       <Text style={styles.text}>Hello {user ? user.name : 'test_user'}!</Text>
       <Text style={styles.text}>Welcome to HomePage!</Text>
       <Button title="Logout" onPress={onLogoutButtonPress} />
-      <Button title = "ViewProfile" onPress={() => navigation.navigate("UserProfile")} />
+      <Button
+        title="ViewProfile"
+        onPress={() => navigation.navigate('UserProfile')}
+      />
     </View>
   );
 }

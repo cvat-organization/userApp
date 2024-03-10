@@ -9,55 +9,90 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
+import {passwordsMatch, validPassword} from '../utilities';
 import axios from 'axios';
 import {baseUrl} from '../constants';
-
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
-export default function EmailPhone() {
+export default function ChangePassword() {
   const navigation = useNavigation();
 
-  const [emailPhone, setEmailPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
 
+  const route = useRoute();
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NWVjMTc5ZjM5MWI0YzBhMjNhNGJjYWYiLCJpYXQiOjE3MTAwNTg4Njd9.ioJp2kbs9YATmAVW4qY8FSAMtqrz4x-IFVaSOfL18jo';
   const handleCancel = () => {
-    setEmailPhone('');
     setPassword('');
-    navigation.navigate('Login');
+    setConfirmPassword('');
+    navigation.navigate('UserProfile');
   };
-
+  //const pwdToken = route.params?.pwdToken;
   const handleSubmit = () => {
     const userData = {
-      [emailPhone.includes('@') ? 'email' : 'phoneNo']: emailPhone,
       password: password,
-      userType: 'Customer',
     };
-    console.log(userData);
-
     axios
-      .post(baseUrl + '/login', userData)
-      .then(function (res) {
-        //saveTokenToStorage(res.data.token);
-        console.log(res.status);
+      .post(
+        baseUrl + '/request-pwd-change',
+        {
+          password: oldPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, //sending the session token
+          },
+        },
+      )
+      .then(res => {
         if (res.status === 200) {
-          navigation.navigate('HomePage');
+          if (
+            validPassword(password) &&
+            passwordsMatch(password, confirmPassword)
+          ) {
+            //console.log('called');
+            axios
+              .post(
+                baseUrl + '/new-password',
+                {
+                  password: password,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${res.data.token}`,
+                  },
+                },
+              )
+              .then(res => {
+                console.log(res);
+                if (res.status === 201) {
+                  navigation.navigate('Login');
+                }
+              })
+              .catch(e => {
+                console.log(e.message);
+              });
+          }
         }
-        // console.log(userData);
       })
-      .catch(function (e) {
+      .catch(e => {
         console.log(e.message);
       });
+
+    //console.log(userData);
   };
 
-  //   // check if phone or email is valid
-  //   const isEmail = emailPhone.includes('@');
-  //   const isPhone = emailPhone.length === 10 && !isNaN(emailPhone);
+  // encrypt passwords
 
   return (
     <ScrollView style={{flex: 1, backgroundColor: COLORS.light_peach}}>
@@ -81,36 +116,39 @@ export default function EmailPhone() {
               fontWeight: 'bold',
               color: COLORS.black,
             }}>
-            LOGIN
-          </Text>
-          <Text
-            style={{
-              fontSize: FONT_SIZES.regular,
-              fontWeight: 'normal',
-              color: COLORS.black,
-            }}>
-            Login to your account
+            Change Password
           </Text>
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>ENTER EMAIL / PHONE</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Enter your email"
-            placeholderTextColor={COLORS.light_gray}
-            value={emailPhone}
-            autoCapitalize="none"
-            onChangeText={text => setEmailPhone(text)}
-          />
-        </View>
-
-        <View style={styles.input}>
-          <Text style={styles.inputHeading}>PASSWORD</Text>
+          <Text style={styles.inputHeading}>Enter old password</Text>
           <View style={styles.passwordField}>
             <TextInput
               style={{flex: 1, color: COLORS.black}}
-              placeholder="Enter your password"
+              placeholder="Enter old password"
+              placeholderTextColor={COLORS.light_gray}
+              secureTextEntry={!showOldPassword}
+              value={oldPassword}
+              autoCapitalize="none"
+              onChangeText={text => setOldPassword(text)}
+            />
+            <TouchableOpacity
+              onPress={() => setShowOldPassword(!showOldPassword)}>
+              <Icon
+                name={!showOldPassword ? 'eye' : 'eye-slash'}
+                size={20}
+                color={COLORS.black}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.input}>
+          <Text style={styles.inputHeading}>Enter new password</Text>
+          <View style={styles.passwordField}>
+            <TextInput
+              style={{flex: 1, color: COLORS.black}}
+              placeholder="Enter new password"
               placeholderTextColor={COLORS.light_gray}
               secureTextEntry={!showPassword}
               value={password}
@@ -121,17 +159,34 @@ export default function EmailPhone() {
               <Icon
                 name={!showPassword ? 'eye' : 'eye-slash'}
                 size={20}
-                color="black"
+                color={COLORS.black}
               />
             </TouchableOpacity>
           </View>
         </View>
 
-        <TouchableOpacity
-          style={styles.forgotPasswordButton}
-          onPress={() => navigation.navigate('ForgotPassword')}>
-          <Text style={{color: COLORS.dark_peach}}>Forgot Password?</Text>
-        </TouchableOpacity>
+        <View style={styles.input}>
+          <Text style={styles.inputHeading}>Confirm password</Text>
+          <View style={styles.passwordField}>
+            <TextInput
+              style={{flex: 1, color: COLORS.black}}
+              placeholder="Confirm your password"
+              placeholderTextColor={COLORS.light_gray}
+              secureTextEntry={!showConfirmPassword}
+              value={confirmPassword}
+              autoCapitalize="none"
+              onChangeText={text => setConfirmPassword(text)}
+            />
+            <TouchableOpacity
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Icon
+                name={!showConfirmPassword ? 'eye' : 'eye-slash'}
+                size={20}
+                color={COLORS.black}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonCancel} onPress={handleCancel}>
@@ -174,9 +229,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-  },
-  forgotPasswordButton: {
-    marginTop: 10,
   },
   header: {
     width: 0.9 * w,

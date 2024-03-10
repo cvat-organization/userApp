@@ -13,12 +13,11 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {COLORS, FONT_SIZES} from '../constants';
 import axios from 'axios';
+import {baseUrl} from '../constants';
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
 export default function VerifyForgotPasswordOTP() {
-
-
   const navigation = useNavigation();
 
   const [otp, setOtp] = useState('');
@@ -36,26 +35,22 @@ export default function VerifyForgotPasswordOTP() {
       otp: otp,
       email: email,
       userType: 'Customer',
-      
     };
 
-    axios.post('http://192.168.0.155:4000/verify-otp', userData).then((res) => {
+    axios
+      .post(baseUrl + '/verify-otp', userData)
+      .then(res => {
         console.log(res.data.token);
-        if(res.status === 200){
-            navigation.navigate('NewPassword', {pwdToken : res.data.token});
+        if (res.status === 200) {
+          navigation.navigate('NewPassword', {pwdToken: res.data.token});
         }
-        
-    })
-    .catch((e) => {
+      })
+      .catch(e => {
         console.log(e.message);
-    })
+      });
 
     console.log(userData);
-
-    
   };
-
-  
 
   return (
     <ScrollView style={{flex: 1, backgroundColor: COLORS.light_peach}}>

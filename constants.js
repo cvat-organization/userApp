@@ -14,3 +14,5 @@ export const FONT_SIZES = {
   large: 24,
   extraLarge: 32,
 };
+
+export const baseUrl = 'http://192.168.0.155:4000';
