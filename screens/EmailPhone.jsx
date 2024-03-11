@@ -12,14 +12,13 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {COLORS, FONT_SIZES} from '../constants';
+import {COLORS, FONT_SIZES, baseUrl} from '../constants';
 import {
   isEmail,
   storeData,
   validEmail,
   validPhoneNo,
   validPassword,
-  listAllKeys,
 } from '../utilities';
 import axios from 'axios';
 
@@ -63,24 +62,18 @@ export default function EmailPhone() {
 
     if (proceed) {
       try {
-        const response = await axios.post(
-          'http://192.168.0.108:4000/login',
-          data,
-        );
+        const response = await axios.post(baseUrl + '/login', data);
         token = response.data.token;
         storeData('token', token);
         try {
-          const response = await axios.get(
-            'http://192.168.0.108:4000/homepage',
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+          const response = await axios.get(baseUrl + '/homepage', {
+            headers: {
+              Authorization: `Bearer ${token}`,
             },
-          );
+          });
           console.log(response.data.message);
           ToastAndroid.show(response.data.message, ToastAndroid.SHORT);
-          navigation.navigate('HomePage', {token});
+          navigation.navigate('BottomTab', {token, screen: 'HomePage'});
         } catch (error) {
           console.log(error.response.data.message);
         }

@@ -11,7 +11,7 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {COLORS, FONT_SIZES} from '../constants';
+import {COLORS, FONT_SIZES, baseUrl} from '../constants';
 
 import auth from '@react-native-firebase/auth';
 import {
@@ -44,7 +44,7 @@ export default function LoginScreen() {
 
       try {
         const response = await axios.post(
-          'http://192.168.0.108:4000/oauth-google',
+          baseUrl + '/oauth-google',
           {
             userType: userType,
           },
@@ -65,7 +65,7 @@ export default function LoginScreen() {
 
       console.log('Signed in with Google');
       ToastAndroid.show('Signed in with Google', ToastAndroid.SHORT);
-      navigation.navigate('HomePage', {user});
+      navigation.navigate('BottomTab', {screen: 'HomePage'});
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log('Sign-In cancelled');

@@ -8,6 +8,7 @@ export default function HomePage() {
   let [googleUser, setGoogleUser] = useState(null);
 
   useEffect(() => {
+    console.log('googleUser modified');
     const getGoogleUser = async () => {
       try {
         const data = await getObjectData('googleUser');
@@ -31,10 +32,6 @@ export default function HomePage() {
         Hello {googleUser ? googleUser.name : 'test_user'}!
       </Text>
       <Text style={styles.text}>Welcome to HomePage!</Text>
-      <Button
-        title="ViewProfile"
-        onPress={() => navigation.navigate('UserProfile')}
-      />
     </View>
   );
 }

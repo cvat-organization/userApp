@@ -91,7 +91,7 @@ export default function UserProfile() {
   return (
     <ScrollView contentContainerStyle={styles.scrollView}>
       <View style={{...styles.profileBar, justifyContent: 'space-between'}}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon
             name="arrow-left"
             color="grey"
