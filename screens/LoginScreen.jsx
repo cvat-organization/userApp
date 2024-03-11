@@ -18,12 +18,15 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import {listAllKeys, storeData, storeObjectData} from '../utilities';
+import axios from 'axios';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
 export default function LoginScreen() {
   const navigation = useNavigation();
+  const userType = 'Customer';
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -39,6 +42,27 @@ export default function LoginScreen() {
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       await auth().signInWithCredential(googleCredential);
 
+      try {
+        const response = await axios.post(
+          'http://192.168.0.108:4000/oauth-google',
+          {
+            userType: userType,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          },
+        );
+        console.log(response.data.token);
+        const token = response.data.token;
+
+        storeData('token', token);
+        storeObjectData('googleUser', user);
+      } catch (error) {
+        console.error(error);
+      }
+
       console.log('Signed in with Google');
       ToastAndroid.show('Signed in with Google', ToastAndroid.SHORT);
       navigation.navigate('HomePage', {user});
@@ -50,6 +74,8 @@ export default function LoginScreen() {
         console.error(error.message);
       }
     }
+
+    listAllKeys();
   };
 
   return (

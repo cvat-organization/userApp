@@ -1,20 +1,35 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Button, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {getObjectData} from '../utilities';
 
-export default function HomePage({route}) {
-  const {user} = route.params || {};
+export default function HomePage() {
   const navigation = useNavigation();
+  let [googleUser, setGoogleUser] = useState(null);
+
+  useEffect(() => {
+    const getGoogleUser = async () => {
+      try {
+        const data = await getObjectData('googleUser');
+        setGoogleUser(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getGoogleUser();
+  }, []);
 
   return (
     <View style={styles.container}>
-      {user && (
+      {googleUser && (
         <Image
-          source={{uri: user.photo}}
+          source={{uri: googleUser.photo}}
           style={{width: 100, height: 100, marginBottom: 20, borderRadius: 50}}
         />
       )}
-      <Text style={styles.text}>Hello {user ? user.name : 'test_user'}!</Text>
+      <Text style={styles.text}>
+        Hello {googleUser ? googleUser.name : 'test_user'}!
+      </Text>
       <Text style={styles.text}>Welcome to HomePage!</Text>
       <Button
         title="ViewProfile"
