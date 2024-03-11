@@ -3,6 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import axios from 'axios';
 import {getData, listAllKeys} from '../utilities';
+import {baseUrl} from '../constants';
 
 import LoginScreen from '../screens/LoginScreen';
 import HomePage from '../screens/HomePage';
@@ -12,6 +13,8 @@ import ForgotPassword from '../screens/ForgotPassword';
 import NewPassword from '../screens/NewPassword';
 import UserProfile from '../screens/UserProfile';
 import SplashScreen from '../screens/SplashScreen';
+import VerifyForgotPasswordOTP from '../screens/VerifyForgotPasswordOTP';
+import ChangePassword from '../screens/ChangePassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,14 +30,11 @@ export default function AppNavigator() {
         const token = await getData('token');
         if (token) {
           try {
-            const response = await axios.get(
-              'http://192.168.0.108:4000/homepage',
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
+            const response = await axios.get(baseUrl + '/homepage', {
+              headers: {
+                Authorization: `Bearer ${token}`,
               },
-            );
+            });
             setInitialRouteName('HomePage');
             console.log(response.data.message);
           } catch (error) {
@@ -49,7 +49,7 @@ export default function AppNavigator() {
       } finally {
         setTimeout(() => {
           setLoading(false);
-        }, 1000); // 5 seconds
+        }, 2000); // 2 seconds
       }
     };
 
@@ -71,6 +71,8 @@ export default function AppNavigator() {
         <Stack.Screen name="NewPassword" component={NewPassword} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        <Stack.Screen name="ForgotPwdOTP" component={VerifyForgotPasswordOTP} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );

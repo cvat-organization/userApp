@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {COLORS, FONT_SIZES} from '../constants';
-import axios from 'axios';
+import {COLORS, FONT_SIZES, baseUrl} from '../constants';
 import {allValid} from '../utilities';
+import axios from 'axios';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
@@ -49,17 +49,22 @@ export default function SignUpScreen() {
 
     if (allValid(data)) {
       try {
-        const response = await axios.post(
-          'http://192.168.0.108:4000/register', // change to server
-          data,
-        );
+        const response = await axios.post(baseUrl + '/register', {
+          fullName: data.fullName,
+          displayName: data.displayName,
+          phoneNo: data.phoneNo,
+          email: data.email,
+          password: data.password,
+          userType: data.userType,
+        });
+        console.log(response);
         if (response.status === 201) {
           navigation.navigate('EmailPhone');
         }
         console.log(response.data.message);
         ToastAndroid.show(response.data.message, ToastAndroid.LONG);
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log(error.message);
         ToastAndroid.show(error.response.data.message, ToastAndroid.LONG);
       }
     }
@@ -191,15 +196,10 @@ export default function SignUpScreen() {
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.buttonCancel} onPress={handleCancel}>
-            <Text
-              style={{color: COLORS.dark_peach, fontSize: FONT_SIZES.medium}}>
-              Cancel
-            </Text>
+            <Text style={{color: COLORS.dark_peach}}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonSubmit} onPress={handleSubmit}>
-            <Text style={{color: COLORS.white, fontSize: FONT_SIZES.medium}}>
-              Submit
-            </Text>
+            <Text style={{color: COLORS.white}}>Submit</Text>
           </TouchableOpacity>
         </View>
       </View>

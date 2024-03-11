@@ -10,44 +10,47 @@ import {
   TouchableOpacity,
   ToastAndroid,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import axios from 'axios';
 import {COLORS, FONT_SIZES, baseUrl} from '../constants';
-import {validEmail} from '../utilities';
+import axios from 'axios';
 
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
-export default function ForgotPassword() {
+export default function VerifyForgotPasswordOTP() {
   const navigation = useNavigation();
 
-  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const route = useRoute();
+  const email = route.params?.email;
+
+  ToastAndroid.show('OTP sent to ' + email, ToastAndroid.LONG);
 
   const handleCancel = () => navigation.navigate('Login');
 
   const handleSubmit = () => {
-    if (validEmail(email)) {
-      const userData = {
-        email: email,
-        userType: 'Customer',
-      };
+    const userData = {
+      otp: otp,
+      email: email,
+      userType: 'Customer',
+    };
 
-      ToastAndroid.show('Sending OTP ...', ToastAndroid.SHORT);
+    axios
+      .post(baseUrl + '/verify-otp', userData)
+      .then(res => {
+        console.log(res.data.token);
+        if (res.status === 200) {
+          navigation.navigate('NewPassword', {pwdToken: res.data.token});
+          ToastAndroid.show('OTP verified successfully', ToastAndroid.SHORT);
+        }
+      })
+      .catch(e => {
+        console.log(e.message);
+        ToastAndroid.show('Invalid OTP', ToastAndroid.SHORT);
+      });
 
-      axios
-        .post(baseUrl + '/request-otp', userData)
-        .then(res => {
-          if (res.status === 200) {
-            navigation.navigate('ForgotPwdOTP', {email: email});
-          }
-        })
-        .catch(e => {
-          console.log(e.message);
-        });
-
-      console.log(userData);
-    }
+    console.log(userData);
   };
 
   return (
@@ -72,7 +75,7 @@ export default function ForgotPassword() {
               fontWeight: 'bold',
               color: COLORS.black,
             }}>
-            Forgot password
+            Verify OTP
           </Text>
           <Text
             style={{
@@ -80,20 +83,19 @@ export default function ForgotPassword() {
               fontWeight: 'normal',
               color: COLORS.black,
             }}>
-            Enter your email for the verification process, we will send a four
-            digit code to that email.
+            Enter the verification OTP sent to the requested email.
           </Text>
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>Enter email</Text>
+          <Text style={styles.inputHeading}>Enter OTP</Text>
           <TextInput
             style={styles.inputField}
-            placeholder="Enter your email"
+            placeholder="Enter OTP"
             placeholderTextColor={COLORS.light_gray}
-            value={email}
+            value={otp}
             autoCapitalize="none"
-            onChangeText={text => setEmail(text)}
+            onChangeText={text => setOtp(text)}
           />
         </View>
 

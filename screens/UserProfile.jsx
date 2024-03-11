@@ -19,8 +19,9 @@ import axios from 'axios';
 import {clearAll, getData} from '../utilities';
 import auth from '@react-native-firebase/auth';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {baseUrl} from '../constants';
 
-const UserProfile = () => {
+export default function UserProfile() {
   const navigation = useNavigation();
 
   const [windowDimensions, setWindowDimensions] = useState({
@@ -64,7 +65,7 @@ const UserProfile = () => {
       const token = await getData('token');
       if (token) {
         const response = await axios.post(
-          'http://192.168.0.108:4000/logout',
+          baseUrl + '/logout',
           {},
           {
             headers: {
@@ -81,6 +82,10 @@ const UserProfile = () => {
 
     clearAll();
     navigation.navigate('Login');
+  };
+
+  const changePwd = () => {
+    navigation.navigate('ChangePassword');
   };
 
   return (
@@ -371,7 +376,7 @@ const UserProfile = () => {
           <Text style={{fontWeight: 'bold', color: '#D16941'}}>FREE</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.changePwdButton}>
+        <TouchableOpacity style={styles.changePwdButton} onPress={changePwd}>
           <Text style={{color: 'grey', fontSize: 12}}>Change Password </Text>
         </TouchableOpacity>
 
@@ -381,9 +386,7 @@ const UserProfile = () => {
       </View>
     </ScrollView>
   );
-};
-
-export default UserProfile;
+}
 
 const styles = StyleSheet.create({
   scrollView: {

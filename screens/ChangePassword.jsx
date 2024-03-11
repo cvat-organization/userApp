@@ -12,58 +12,82 @@ import {
 } from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {COLORS, FONT_SIZES, baseUrl} from '../constants';
-import {passwordsMatch, validPassword} from '../utilities';
+import {COLORS, FONT_SIZES} from '../constants';
+import {getData, passwordsMatch, validPassword} from '../utilities';
+import {baseUrl} from '../constants';
 import axios from 'axios';
-
 const w = Dimensions.get('window').width;
 const h = Dimensions.get('window').height;
 
-export default function NewPassword() {
+export default function ChangePassword() {
   const navigation = useNavigation();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showOldPassword, setShowOldPassword] = useState(false);
 
-  const route = useRoute();
+  const handleCancel = () => navigation.navigate('UserProfile');
 
-  const handleCancel = () => navigation.navigate('Login');
-
-  const pwdToken = route.params?.pwdToken;
-
-  const handleSubmit = () => {
-    const userData = {
-      password: password,
-    };
-    if (validPassword(password) && passwordsMatch(password, confirmPassword)) {
-      console.log('called');
-      axios
-        .post(baseUrl + '/new-password', userData, {
+  const handleSubmit = async () => {
+    const token = await getData('token');
+    axios
+      .post(
+        baseUrl + '/request-pwd-change',
+        {
+          password: oldPassword,
+        },
+        {
           headers: {
-            Authorization: `Bearer ${pwdToken}`,
+            Authorization: `Bearer ${token}`,
           },
-        })
-        .then(res => {
-          console.log(res);
-          if (res.status === 201) {
-            ToastAndroid.show(
-              'Password changed successfully',
-              ToastAndroid.SHORT,
-            );
-            navigation.navigate('Login');
-          } else {
-            ToastAndroid.show('Password change failed', ToastAndroid.SHORT);
+        },
+      )
+      .then(res => {
+        if (res.status === 200) {
+          if (
+            validPassword(password) &&
+            passwordsMatch(password, confirmPassword)
+          ) {
+            axios
+              .post(
+                baseUrl + '/new-password',
+                {
+                  password: password,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${res.data.token}`,
+                  },
+                },
+              )
+              .then(res => {
+                console.log(res);
+                if (res.status === 201) {
+                  ToastAndroid.show(
+                    'Password changed successfully',
+                    ToastAndroid.SHORT,
+                  );
+                  navigation.navigate('Login');
+                }
+              })
+              .catch(e => {
+                ToastAndroid.show(
+                  'Password changing failed',
+                  ToastAndroid.SHORT,
+                );
+                console.log(e.message);
+              });
           }
-        })
-        .catch(e => {
-          console.log(e.message);
-          ToastAndroid.show('Password change failed', ToastAndroid.SHORT);
-        });
-    }
-
-    console.log(userData);
+        }
+      })
+      .catch(e => {
+        ToastAndroid.show('Incorrect old password', ToastAndroid.SHORT);
+        console.log(e.message);
+      });
   };
 
   return (
@@ -88,16 +112,31 @@ export default function NewPassword() {
               fontWeight: 'bold',
               color: COLORS.black,
             }}>
-            New password
+            Change Password
           </Text>
-          <Text
-            style={{
-              fontSize: FONT_SIZES.regular,
-              fontWeight: 'normal',
-              color: COLORS.black,
-            }}>
-            Set a new password for your account.
-          </Text>
+        </View>
+
+        <View style={styles.input}>
+          <Text style={styles.inputHeading}>Enter old password</Text>
+          <View style={styles.passwordField}>
+            <TextInput
+              style={{flex: 1, color: COLORS.black}}
+              placeholder="Enter old password"
+              placeholderTextColor={COLORS.light_gray}
+              secureTextEntry={!showOldPassword}
+              value={oldPassword}
+              autoCapitalize="none"
+              onChangeText={text => setOldPassword(text)}
+            />
+            <TouchableOpacity
+              onPress={() => setShowOldPassword(!showOldPassword)}>
+              <Icon
+                name={!showOldPassword ? 'eye' : 'eye-slash'}
+                size={20}
+                color={COLORS.black}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View style={styles.input}>
@@ -123,11 +162,11 @@ export default function NewPassword() {
         </View>
 
         <View style={styles.input}>
-          <Text style={styles.inputHeading}>Confirm new password</Text>
+          <Text style={styles.inputHeading}>Confirm password</Text>
           <View style={styles.passwordField}>
             <TextInput
               style={{flex: 1, color: COLORS.black}}
-              placeholder="Confirm new password"
+              placeholder="Confirm your password"
               placeholderTextColor={COLORS.light_gray}
               secureTextEntry={!showConfirmPassword}
               value={confirmPassword}
